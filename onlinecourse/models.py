@@ -10,6 +10,26 @@ class Course(models.Model):
         return self.name
 
 
+class Instructor(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.user.username
+
+
+class Learner(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.user.username
+
+
 class Lesson(models.Model):
     title = models.CharField(max_length=200)
     course = models.ForeignKey(
@@ -32,6 +52,12 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question_text
+
+    def is_get_score(self, selected_ids):
+        return self.choice_set.filter(
+            id__in=selected_ids,
+            is_correct=True
+        ).exists()
 
 
 class Choice(models.Model):

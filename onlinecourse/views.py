@@ -39,29 +39,41 @@ def show_exam_result(request, course_id, submission_id):
         pk=submission_id
     )
 
-    selected_choices = submission.choices.all()
+    selected_ids = list(
+        submission.choices.values_list("id", flat=True)
+    )
 
-    total_questions = Question.objects.filter(
+    questions = Question.objects.filter(
         lesson__course=course
-    ).count()
+    )
 
-    correct_answers = selected_choices.filter(
-        is_correct=True
-    ).count()
+    total_score = 0
 
-    score = 0
+    for question in questions:
+        if question.is_get_score(selected_ids):
+            total_score += 1
 
-    if total_questions > 0:
-        score = int(
-            correct_answers / total_questions * 100
+    possible_score = questions.count()
+
+    grade = 0
+    if possible_score > 0:
+        grade = int(
+            total_score / possible_score * 100
         )
+
+    possible = grade >= 70
 
     context = {
         "course": course,
         "submission": submission,
-        "selected_choices": selected_choices,
-        "score": score,
-        "passed": score >= 70,
+        "selected_ids": selected_ids,
+        "total_score": total_score,
+        "possible_score": possible_score,
+        "grade": grade,
+        "possible": possible,
+        "score": grade,
+        "passed": possible,
+        "selected_choices": submission.choices.all(),
     }
 
     return render(
