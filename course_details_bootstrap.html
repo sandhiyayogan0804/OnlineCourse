@@ -17,7 +17,7 @@
 
     <h1 class="mb-4">{{ course.name }}</h1>
 
-    {% for lesson in course.lesson_set.all %}
+    {% for lesson in course.lesson.all %}
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">{{ lesson.title }}</h5>
